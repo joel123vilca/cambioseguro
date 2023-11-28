@@ -14,6 +14,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'import/extensions': [2, 'never', { ts: 'never', tsx: 'never', js: 'never', jsx: 'never' }],
     'import/no-unresolved': 'off',
+    'vuejs-accessibility/form-control-has-label': 'off',
   },
   overrides: [
     {
