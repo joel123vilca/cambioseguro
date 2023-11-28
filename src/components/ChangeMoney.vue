@@ -2,11 +2,17 @@
   <div class="change-money">
     <div class="charge-money-card">
       <div class="card-header">
-        <a :class="{ 'active-link': true }">Dólar Compra</a>
-        <a :class="{ 'active-link': true }">Dólar Venta</a>
+        <a :class="{ 'active-link': true }"><span>Dolar Compra 3.9240</span></a>
+        <a :class="{ 'active-link': true }"><span>Dolar Venta 3.9240</span></a>
       </div>
       <div class="card-content" :class="{ 'inputs-reverse': typeActive === 'PEN' }">
-        <input type="text" placeholder="dolar" class="card-input" name="soles" />
+        <div class="card-input-content">
+          <div class="card-span"><span>Dolares</span></div>
+          <div class="card-input">
+            <span class="input-label">Envias</span>
+            <input v-model="inputCurrency" type="text" class="card-input-change" name="soles" />
+          </div>
+        </div>
         <button type="button" class="btn-card" @click="changeTypeMoney">
           <img
             alt="icon logo"
@@ -14,7 +20,13 @@
             :class="{ 'icon-container-reverse': iconLoading }"
           />
         </button>
-        <input type="text" placeholder="soles" class="card-input" name="dolar" />
+        <div class="card-input-content second">
+          <div class="card-span"><span>Soles</span></div>
+          <div class="card-input">
+            <span class="input-label">Recibes</span>
+            <input type="text" v-model="inputCurrency" class="card-input-change" name="soles" />
+          </div>
+        </div>
       </div>
       <div class="card-action">
         <button type="button" class="action-btn">Iniciar Operacion</button>
@@ -24,10 +36,24 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const typeActive = ref('USD')
 const iconLoading = ref(false)
+const inputCurrency = ref<string>('')
+
+watch(inputCurrency, (newValue) => {
+  inputCurrency.value = formatCurrency(newValue)
+})
+
+const formatCurrency = (value: string): string => {
+  // Lógica de formateo aquí, similar al ejemplo anterior
+  value = value.replace(/[^\d]/g, '')
+  value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  value = '$' + value
+
+  return value
+}
 
 const changeTypeMoney = () => {
   iconLoading.value = true
@@ -42,8 +68,48 @@ const changeTypeMoney = () => {
 }
 </script>
 
-<style></style>
 <style lang="scss">
+.card-input-content {
+  display: flex;
+  height: 44px;
+  border-radius: 6px;
+  border: 1px solid #6e46e6;
+  margin-top: 20px;
+  .card-span {
+    width: 94px;
+    height: 44px;
+    border-radius: 5px 0px 0px 6px;
+    background: var(--5, #f3f3f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span {
+      color: #6e46e6;
+      font-size: 14px;
+    }
+  }
+  .card-input {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 15px;
+    padding-top: 4px;
+    .input-label {
+      color: var(--60, #717191);
+      font-size: 12px;
+    }
+  }
+  .card-input-change {
+    height: 17px;
+    border-radius: 6px;
+    border: 1px solid #ffff;
+    outline: none;
+    text-align: right;
+    font-size: 16px;
+  }
+}
 .change-money {
   display: flex;
   justify-content: center;
@@ -55,10 +121,19 @@ const changeTypeMoney = () => {
     border-radius: 8px;
     .card-header {
       height: 63px;
+      padding: 0px 77px 0px 77px;
       border-bottom: 1px solid #e7e7ed;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      justify-content: space-between;
+      align-items: flex-end;
+      a {
+        width: 80px;
+        height: 50%;
+        font-size: 12px;
+        border-bottom: 1px solid #2f00ff;
+        text-align: center;
+        cursor: pointer;
+      }
     }
     .active-link {
       color: #6e46e6;
@@ -70,12 +145,6 @@ const changeTypeMoney = () => {
       display: flex;
       flex-direction: column;
       padding: 20px 55px 0px 55px;
-    }
-    .card-input {
-      margin-top: 20px;
-      height: 44px;
-      border-radius: 6px;
-      border: 1px solid #6e46e6;
     }
     .inputs-reverse {
       flex-direction: column-reverse;
