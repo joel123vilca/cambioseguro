@@ -2,10 +2,18 @@
   <div class="change-money">
     <div class="charge-money-card">
       <div class="card-header">
-        <a :class="{ 'active-link': typeActive === 'PEN' }" @click="changeMoney('PEN')"
+        <a
+          :class="{ 'active-link': typeActive === 'PEN' }"
+          @click="changeMoney('PEN')"
+          role="button"
+          tabindex="0"
           ><span>Dolar Compra {{ purchasePrice }} </span></a
         >
-        <a :class="{ 'active-link': typeActive === 'USD' }" @click="changeMoney('USD')"
+        <a
+          :class="{ 'active-link': typeActive === 'USD' }"
+          @click="changeMoney('USD')"
+          role="button"
+          tabindex="0"
           ><span>Dolar Venta {{ salePrice }} </span></a
         >
       </div>
@@ -61,11 +69,11 @@ const formatCurrency = (value: string, type: string): string => {
 
 const convertCurrency = () => {
   if (typeActive.value === 'USD') {
-    let money = purchaseInput.value.replace(/[^\d]/g, '')
+    const money = purchaseInput.value.replace(/[^\d]/g, '')
     saleInput.value =
       'S/.' + (money * salePrice.value).toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   } else {
-    let money = saleInput.value.replace(/[^\d]/g, '')
+    const money = saleInput.value.replace(/[^\d]/g, '')
     purchaseInput.value =
       '$' + (money / purchasePrice.value).toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }

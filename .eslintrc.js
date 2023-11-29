@@ -15,6 +15,10 @@ module.exports = {
     'import/extensions': [2, 'never', { ts: 'never', tsx: 'never', js: 'never', jsx: 'never' }],
     'import/no-unresolved': 'off',
     'vuejs-accessibility/form-control-has-label': 'off',
+    'no-param-reassign': 'off',
+    'prefer-template': 'off',
+    'import/prefer-default-export': 'off',
+    'vuejs-accessibility/click-events-have-key-events': 'off',
   },
   overrides: [
     {
