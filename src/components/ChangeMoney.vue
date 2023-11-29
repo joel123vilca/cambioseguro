@@ -2,15 +2,19 @@
   <div class="change-money">
     <div class="charge-money-card">
       <div class="card-header">
-        <a :class="{ 'active-link': true }"><span>Dolar Compra 3.9240</span></a>
-        <a :class="{ 'active-link': true }"><span>Dolar Venta 3.9240</span></a>
+        <a :class="{ 'active-link': typeActive === 'PEN' }" @click="changeMoney('PEN')"
+          ><span>Dolar Compra {{ purchasePrice }} </span></a
+        >
+        <a :class="{ 'active-link': typeActive === 'USD' }" @click="changeMoney('USD')"
+          ><span>Dolar Venta {{ salePrice }} </span></a
+        >
       </div>
       <div class="card-content" :class="{ 'inputs-reverse': typeActive === 'PEN' }">
         <div class="card-input-content">
           <div class="card-span"><span>Dolares</span></div>
           <div class="card-input">
-            <span class="input-label">Envias</span>
-            <input v-model="inputCurrency" type="text" class="card-input-change" name="soles" />
+            <span class="input-label"> {{ typeActive === 'USD' ? 'Envias' : 'Recibes' }} </span>
+            <input v-model="purchaseInput" type="text" class="card-input-change" name="soles" />
           </div>
         </div>
         <button type="button" class="btn-card" @click="changeTypeMoney">
@@ -23,8 +27,8 @@
         <div class="card-input-content second">
           <div class="card-span"><span>Soles</span></div>
           <div class="card-input">
-            <span class="input-label">Recibes</span>
-            <input type="text" v-model="inputCurrency" class="card-input-change" name="soles" />
+            <span class="input-label">{{ typeActive === 'PEN' ? 'Envias' : 'Recibes' }} </span>
+            <input type="text" v-model="saleInput" class="card-input-change" name="soles" />
           </div>
         </div>
       </div>
@@ -36,23 +40,43 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
+import { useChangeMoneyStore } from '@/store'
 
-const typeActive = ref('USD')
+const store = useChangeMoneyStore()
+
+const purchasePrice = ref(0)
+const salePrice = ref(0)
+const typeActive = ref('PEN')
 const iconLoading = ref(false)
-const inputCurrency = ref<string>('')
+const saleInput = ref<string>('')
+const purchaseInput = ref<string>('')
 
-watch(inputCurrency, (newValue) => {
-  inputCurrency.value = formatCurrency(newValue)
-})
-
-const formatCurrency = (value: string): string => {
-  // Lógica de formateo aquí, similar al ejemplo anterior
+const formatCurrency = (value: string, type: string): string => {
   value = value.replace(/[^\d]/g, '')
   value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  value = '$' + value
-
+  value = type + value
   return value
+}
+
+const convertCurrency = () => {
+  if (typeActive.value === 'USD') {
+    let money = purchaseInput.value.replace(/[^\d]/g, '')
+    saleInput.value =
+      'S/.' + (money * salePrice.value).toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  } else {
+    let money = saleInput.value.replace(/[^\d]/g, '')
+    purchaseInput.value =
+      '$' + (money / purchasePrice.value).toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+}
+
+const changeMoney = (money: string) => {
+  iconLoading.value = true
+  setTimeout(() => {
+    typeActive.value = money
+    iconLoading.value = false
+  }, 500)
 }
 
 const changeTypeMoney = () => {
@@ -66,6 +90,30 @@ const changeTypeMoney = () => {
     iconLoading.value = false
   }, 500)
 }
+
+watch(purchaseInput, (newValue) => {
+  convertCurrency()
+  purchaseInput.value = formatCurrency(newValue, '$')
+})
+
+watch(saleInput, (newValue) => {
+  convertCurrency()
+  saleInput.value = formatCurrency(newValue, 'S/.')
+})
+
+watch(
+  () => store.rateSale,
+  (newValue) => {
+    salePrice.value = newValue
+  }
+)
+
+watch(
+  () => store.ratePurchase,
+  (newValue) => {
+    purchasePrice.value = newValue
+  }
+)
 </script>
 
 <style lang="scss">
@@ -130,7 +178,6 @@ const changeTypeMoney = () => {
         width: 80px;
         height: 50%;
         font-size: 12px;
-        border-bottom: 1px solid #2f00ff;
         text-align: center;
         cursor: pointer;
       }
@@ -138,7 +185,7 @@ const changeTypeMoney = () => {
     .active-link {
       color: #6e46e6;
       font-weight: bold;
-      text-decoration-color: #6e46e6;
+      border-bottom: 1px solid #2f00ff;
     }
     .card-content {
       position: relative;
