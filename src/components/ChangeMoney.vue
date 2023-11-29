@@ -95,6 +95,7 @@ const changeTypeMoney = () => {
     } else {
       typeActive.value = 'USD'
     }
+    convertCurrency()
     iconLoading.value = false
   }, 500)
 }
